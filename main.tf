@@ -124,3 +124,27 @@ resource "google_sql_database_instance" "sqldb_Instance" {
     google_compute_subnetwork.subnetwork2
   ]
 }
+
+//VPC Network Peering1 
+resource "google_compute_network_peering" "peering1" {
+  name         = "wp-to-db"
+  network      = google_compute_network.vpc_network1.id
+  peer_network = google_compute_network.vpc_network2.id
+
+  depends_on = [
+    google_compute_network.vpc_network1,
+    google_compute_network.vpc_network2
+  ]
+}
+
+//VPC Network Peering2
+resource "google_compute_network_peering" "peering2" {
+  name         = "db-to-wp"
+  network      = google_compute_network.vpc_network2.id
+  peer_network = google_compute_network.vpc_network1.id
+
+  depends_on = [
+    google_compute_network.vpc_network1,
+    google_compute_network.vpc_network2
+  ]
+}
