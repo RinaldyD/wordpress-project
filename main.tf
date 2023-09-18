@@ -99,3 +99,28 @@ resource "google_compute_firewall" "firewall2" {
     google_compute_network.vpc_network2
   ]
 }
+
+//Configuring SQL Database instance
+resource "google_sql_database_instance" "sqldb_Instance" {
+  name             = "sql1"
+  database_version = "MYSQL_5_6"
+  region           = var.region2
+  root_password    = var.root_pass
+
+  settings {
+    tier = "db-f1-micro"
+
+    ip_configuration {
+      ipv4_enabled = true
+
+      authorized_networks {
+        name  = "publicnet"
+        value = "0.0.0.0/0"
+      }
+    }
+  }
+
+  depends_on = [
+    google_compute_subnetwork.subnetwork2
+  ]
+}
