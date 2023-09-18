@@ -208,3 +208,22 @@ resource "google_container_node_pool" "nodepool1" {
     google_container_cluster.gke_cluster1
   ]
 }
+
+//Set Current Project in gcloud SDK
+resource "null_resource" "set_gcloud_project" {
+  provisioner "local-exec" {
+    command = "gcloud config set project ${var.project_id}"
+  }  
+}
+
+//Configure Kubectl with Our GCP K8s Cluster
+resource "null_resource" "configure_kubectl" {
+  provisioner "local-exec" {
+    command = "gcloud container clusters get-credentials ${google_container_cluster.gke_cluster1.name} --region ${google_container_cluster.gke_cluster1.location} --project ${google_container_cluster.gke_cluster1.project}"
+  }  
+
+  depends_on = [
+    null_resource.set_gcloud_project,
+    google_container_cluster.gke_cluster1
+  ]
+}
