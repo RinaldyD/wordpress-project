@@ -322,3 +322,35 @@ resource "kubernetes_service" "wpService" {
         kubernetes_deployment.wp-dep,
     ]
 }
+
+output "db_host" {
+  value = google_sql_database_instance.sqldb_Instance.ip_address.0.ip_address
+
+  depends_on = [
+    google_sql_database_instance.sqldb_Instance
+  ]
+}
+
+output "database_name" {
+  value = var.database
+
+  depends_on = [
+    google_sql_database_instance.sqldb_Instance
+  ]
+}
+
+output "db_user_name" {
+  value = var.db_user
+
+  depends_on = [
+    google_sql_database_instance.sqldb_Instance
+  ]
+}
+
+output "db_user_passwd" {
+  value = var.db_user_pass
+
+  depends_on = [
+    google_sql_database_instance.sqldb_Instance
+  ]
+}
