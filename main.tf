@@ -169,3 +169,42 @@ resource "google_sql_user" "dbUser" {
     google_sql_database_instance.sqldb_Instance
   ]
 }
+
+//Creating Container Cluster
+resource "google_container_cluster" "gke_cluster1" {
+  name     = "wp-cluster"
+  description = "Wordpress GKE Cluster"
+  project = var.project_id
+  location = var.region1
+  network = google_compute_network.vpc_network1.name
+  subnetwork = google_compute_subnetwork.subnetwork1.name
+  remove_default_node_pool = true
+  initial_node_count       = 1
+
+  depends_on = [
+    google_compute_subnetwork.subnetwork1
+  ]
+}
+
+//Creating Node Pool For Container Cluster
+resource "google_container_node_pool" "nodepool1" {
+  name       = "my-node-pool"
+  project    = var.project_id
+  location   = var.region1
+  cluster    = google_container_cluster.gke_cluster1.name
+  node_count = 1
+
+  node_config {
+    preemptible  = true
+    machine_type = "e2-micro"
+  }
+
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 3
+  }
+
+  depends_on = [
+    google_container_cluster.gke_cluster1
+  ]
+}
