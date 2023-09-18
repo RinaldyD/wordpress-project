@@ -148,3 +148,24 @@ resource "google_compute_network_peering" "peering2" {
     google_compute_network.vpc_network2
   ]
 }
+
+//Creating SQL Database
+resource "google_sql_database" "sql_db" {
+  name     = var.database
+  instance = google_sql_database_instance.sqldb_Instance.name
+
+  depends_on = [
+    google_sql_database_instance.sqldb_Instance
+  ]  
+}
+
+//Creating SQL Database User
+resource "google_sql_user" "dbUser" {
+  name     = var.db_user
+  instance = google_sql_database_instance.sqldb_Instance.name
+  password = var.db_user_pass
+
+  depends_on = [
+    google_sql_database_instance.sqldb_Instance
+  ]
+}
