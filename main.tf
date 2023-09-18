@@ -19,3 +19,45 @@ provider "kubernetes" {
 }
 
 provider "kubectl" {}
+
+//Create first VPC Network
+resource "google_compute_network" "vpc_network1" {
+  name        = "prod-wp"
+  description = "VPC Network for WordPress"
+  project     = var.project_id
+  auto_create_subnetworks = false
+}
+
+//Create Second VPC Network
+resource "google_compute_network" "vpc_network2" {
+  name        = "prod-db"
+  description = "VPC Network For dataBase"
+  project     = var.project_id
+  auto_create_subnetworks = false
+}
+
+//Creating Subnetwork wp for VPC
+resource "google_compute_subnetwork" "subnetwork1" {
+  name          = "wp-subnet"
+  ip_cidr_range = "10.0.0.0/20"
+  project       = var.project_id
+  region        = var.region1
+  network       = google_compute_network.vpc_network1.id
+
+  depends_on = [
+    google_compute_network.vpc_network1
+  ]
+}
+
+//Creating Subnetwork db for VPC
+resource "google_compute_subnetwork" "subnetwork2" {
+  name          = "db-subnet"
+  ip_cidr_range = "10.0.16.0/20"
+  project       = var.project_id
+  region        = var.region2
+  network       = google_compute_network.vpc_network2.id
+
+  depends_on = [
+    google_compute_network.vpc_network2
+  ]
+}
