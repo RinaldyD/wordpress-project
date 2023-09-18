@@ -61,3 +61,41 @@ resource "google_compute_subnetwork" "subnetwork2" {
     google_compute_network.vpc_network2
   ]
 }
+
+//Creating Firewall for wp VPC Network
+resource "google_compute_firewall" "firewall1" {
+  name    = "wp-firewall"
+  network = google_compute_network.vpc_network1.name
+
+  allow {
+    protocol = "icmp"
+  }
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "8080"]
+  }
+
+  source_tags = ["wp", "wordpress"]
+
+  depends_on = [
+    google_compute_network.vpc_network1
+  ]
+}
+
+//Creating Firewall for db VPC Network
+resource "google_compute_firewall" "firewall2" {
+  name    = "db-firewall"
+  network = google_compute_network.vpc_network2.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "8080", "3306"]
+  }
+
+  source_tags = ["db", "database"]
+
+  depends_on = [
+    google_compute_network.vpc_network2
+  ]
+}
